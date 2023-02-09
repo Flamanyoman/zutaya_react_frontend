@@ -1,0 +1,80 @@
+.tickets {
+    min-height: 100vh;
+    display: flex;
+}
+
+.tickets__main {
+    flex: 0.7;
+}
+
+.tickets__img {
+    position: relative;
+    width: 100%;
+    height: 65vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tickets__img div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 1px solid black;
+}
+
+.tickets__img img {
+    position: absolute;
+    width: 40%;
+    max-height: 100%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    -o-object-position: center;
+       object-position: center;
+}
+
+.tickets__body .box {
+    display: flex;
+}
+
+.tickets__body .box > div {
+    color: #3e5060;
+    flex: 1;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.tickets__body .box > div h4 {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.tickets__side {
+    flex: 0.3;
+    border-left: 0.5px solid #007FFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tickets__purchase tr td:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ticktets__qr img {
+    width: 400px;
+    height: 400px;
+
+}

@@ -1,0 +1,96 @@
+.createEvent > h1 {
+  width: 50%;
+  font-size: 40px;
+}
+
+.createEvent .createEvent__flex {
+  display: flex;
+}
+
+.createEvent__left, .createEvent__right {
+    flex: 1; 
+}
+
+.createEvent__left .box, .createEvent__right .box {
+  display: flex;
+  flex-direction: column;
+}
+
+.createEvent__img {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.createEvent__img input {
+  border: none;
+}
+
+.createEvent__img img {
+  max-height: 400px;
+  width: auto;
+  max-width: 400px;
+}
+
+
+.createEvent__bank {
+  margin: 20px 0;
+} 
+
+.createEvent__table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.createEvent__table p {
+margin: 35px 0;
+}
+
+.createEvent button {
+  width: 100px;
+  margin: 20px 0;
+}
+
+
+
+/* ticket type div only */
+.ticketType {
+  width: 90%;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ticketType table {
+  width: 90%;
+}
+
+.ticketType td > div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ticketType__button {
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ticketType__button > input {
+width: 100px;
+}
+
+tr.hideDesc .desc {
+  display: none;
+}
+
+.ticketType__icons {
+  width: 100px;
+}
+

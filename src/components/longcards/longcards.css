@@ -1,0 +1,18 @@
+.longcard {
+    width: 30%;
+    height: 15vh;
+    margin-bottom: 30px;
+    border: 1px solid #edf1f5;
+    box-shadow: 0 0 25px 5px rgb(33 35 39 / 7%);
+}
+
+.longcard > .box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 70%;
+}
+
+.longcard > .box p {
+    font-weight: 500;
+}

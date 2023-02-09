@@ -1,0 +1,327 @@
+ /* profle page css */
+  /* this css was sourced from the tutorial **** on youtube  */
+
+  tbody {
+    cursor: pointer
+  }
+
+  .profile__sidebar {
+    width: 345px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #007FFF;
+    z-index: 100;
+    transition: width 300ms;
+  }
+
+
+  .profile__sidebar .sidebar-brand {
+    height: 90px;
+    padding: 1rem 0rem 1rem 2rem;
+    color:  #F3F6F9;
+  }
+
+  .profile__sidebar .sidebar-brand h2 {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile__sidebar .sidebar-brand span {
+    display: inline-block;
+    padding-right: 1rem;
+  }
+
+  .profile__sidebar img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      -o-object-fit: contain;
+         object-fit: contain;
+  }
+
+  .profile__sidebar .sidebar-menu {
+    margin-top: 1rem;
+
+  }
+
+  .profile__sidebar .sidebar-menu li {
+    width: 100%;
+    margin-bottom: 1.3rem;
+    padding-left: 2rem;
+  }
+
+  .profile__sidebar .sidebar-menu a {
+    display: flex;
+    padding-left: 1rem;
+    display: block;
+    color:  #F3F6F9;
+    font-size: 1.1rem;
+  }
+
+  .profile__sidebar .sidebar-menu a.active {
+    display: flex;
+    background: white;
+    padding-bottom: 1rem;
+    padding-top: 0.5rem;
+    color: var(--main-color);
+    border-radius: 30px 0 0 30px;
+  }
+
+  .profile__sidebar a span:first-child {
+    font-size: 1.5rem;
+    padding-right: 1rem;
+  }
+
+  
+#nav-toggle:checked + .profile__sidebar {
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#nav-toggle:checked + .profile__sidebar .sidebar-brand h2 span:last-child,
+#nav-toggle:checked + .profile__sidebar li a span:last-child {
+  display: none;
+}
+
+
+#nav-toggle:checked ~ .profile__main.content {
+  margin-left: 70px;
+} 
+
+
+#nav-toggle:checked ~ .profile__main header {
+  width: calc(100% - 70px);
+  left: 70px;
+}
+
+  .profile__main.content {
+    transition: margin-left 300ms;
+    margin-left: 345px;
+  }
+
+  .profile__main header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 65px;
+    padding: 0 1rem;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0px -1px 1px #e7ebf0;
+    position: fixed;
+    left: 345px;
+    width: calc(100% - 345px);
+    top: 0;
+    z-index: 1100;
+    transition: left 300ms;
+    background-color: rgba(255,255,255,0.72);
+  }
+  
+  #nav-toggle {
+    display: none;
+  }
+
+  .profile__main header h2 {
+    color: #1A2027
+  }
+
+  .profile__main header h2 label {
+    display: flex;
+  }
+
+  .profile__main header label span {
+    font-size: 1.7rem;
+    padding-right: 1rem;
+  }
+
+.profile__main .user-wrapper {
+  justify-content: space-between;
+  width: 150px;
+  display: flex;
+  align-items: center;
+}
+
+.profile__main .user-wrapper img {
+  border-radius: 50%;
+  margin-left: 1rem;
+}
+
+.profile__main .user-wrapper small {
+  display: inline-block;
+  color: #1A2027
+}
+
+.profile__main main {
+  margin-top: 80px;
+  padding: 2rem 1.5rem;
+  min-height: calc(100vh - 90px);
+}
+
+.profile__main .cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 2rem;
+  margin-top: 1rem;
+}
+
+.profile__main .card {
+  min-height: 180px;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #edf1f5;
+  box-shadow: 0 0 25px 5px rgb(33 35 39 / 7%);
+  padding: 2rem;
+}
+
+.profile__main .card div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile__main .card div:last-child span {
+  font-size: 3rem;
+  color: var(--main-color);
+}
+
+.profile__main .card div:first-child span {
+  color: #1A2027
+}
+
+
+.profile__main .card:last-child h1, .profile__main .card:last-child div:first-child span, .profile__main .card:last-child div:last-child span  {
+  color: #F3F6F9;
+  text-shadow: #1A2027;
+}
+
+.currency-format {
+  display: flex;
+  font-size: 1.2rem;
+}
+
+.profile__main .recent-grid {
+ margin-top: 3.5rem;
+ display: grid;
+ grid-gap: 2rem;
+ grid-template-columns: 65% auto;
+}
+
+.profile__main .recent-grid.costumer {
+  grid-template-columns: 99% auto;
+}
+
+.profile__main .card-header, .profile__main .card-body {
+  padding: 1rem; 
+}
+
+.profile__main .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile__main table {
+  border-collapse: collapse;
+}
+
+.profile__main td .status {
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.profile__main tr td:last-child {
+  display: flex;
+  align-items: center;
+}
+
+.profile__main .status.purple {
+  background-color: rgb(179, 139, 219);
+}
+
+.profile__main .status.orange {
+  background-color: orangered;
+}
+
+.profile__main .status.dark {
+  background-color: #1A2027;
+}
+
+.profile__main .table-responsive {
+  width: 100%;
+  overflow-x:  auto;
+}
+
+.profile__main .costumer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.profile__main .info {
+  display: flex;
+  align-items: center;
+}
+
+.profile__main .info img {
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.profile__main .info h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.profile__main .info small {
+  font-weight: 600;
+  color: var(--text-grey);
+}
+
+.profile__main .contact small {
+  font-size: 1.3rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--main-color);
+}
+
+/* CSS specific to the account page */
+.account__header {
+  display: flex;
+}
+
+.account__img {
+  border-radius: 50%;
+}
+
+.account__list {
+  align-items: center;
+  display: flex;
+  padding: 0 30px;
+  color: #3e5060;
+  font-weight: 700;
+}
+
+.account__list .left, .account__list .right {
+  flex: 1;
+}
+
+.account__item {
+  margin: 30px 0;
+}
+
+.profile__scan-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 20%;
+}

@@ -1,0 +1,26 @@
+.specialCard {
+    width: 80%;
+    min-height: 25vh;
+    margin: 50px 0;
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 30px 0;
+}
+
+.specialCard span {
+    max-width: 70%;
+}
+
+.specialCard span h3 {
+    font-weight: 400;
+    font-size: 40px;
+    margin-bottom: 3px;
+}
+
+.specialCard button {
+    width: 20%;
+    height: 10vh;
+}
+

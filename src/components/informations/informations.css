@@ -1,0 +1,37 @@
+.information__title {
+    font-size: 50px;
+    margin: 20px 0;
+}
+
+.information__item {
+    width: 100%;
+    display: flex;
+    min-height: 300px;
+}
+
+.information__p, .information__img {
+    flex: 0.5;
+}
+
+.information__p h2 {
+    margin-bottom: 10px;
+}
+
+.information__item p {
+    font-size: 18px;
+    line-height: 30px;
+    max-width: 900px;
+}
+
+.information__img  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.information__img > img {
+    max-width: 400px;
+    max-height: 300px;
+}
+
+

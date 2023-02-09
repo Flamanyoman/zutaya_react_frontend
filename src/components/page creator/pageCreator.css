@@ -1,0 +1,116 @@
+.pageCreator, .pageEditor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageCreator__box, .pageEditor__box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    min-height: 80vh;
+}
+
+.pageCreator__text, .pageEditor__text {
+    flex: 0.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageCreator__text > h1, .pageEditor__text > h1 {
+    margin-bottom: 10px;
+    font-size: 40px;
+    background: linear-gradient(315deg, #045de9 0%, #09c6f9 74%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pageCreator__text > p, .pageEditor__text > p {
+    max-width: 500px;
+    font-size: 18px;
+}
+
+
+
+.pageCreator form, .pageEditor form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pageCreator form span, .pageEditor form span {
+    min-width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.pageCreator form span, .pageEditor form span.image__inputs div {
+   display: flex;
+   flex-direction: column;
+}
+
+.pageEditor form img {
+    width: 50%;
+    margin-bottom: 10px;
+    height: auto;
+}
+
+.pageCreator form span input, .pageCreator form span textarea, .pageEditor form input, .pageEditor form textarea {
+    width: 100%;
+}
+
+.searchPages {
+    display: flex;
+    align-items: center;
+}
+
+.searchPages .icon__button {
+    border: none;
+}
+
+.searchPages .icon__button:hover {
+    border: 2px solid black;
+}
+
+.pageEditor__types {
+    width: 50vw;
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+
+.pageEditor__subTopic {
+    padding: 30px 0;
+}
+
+.pageEditor .subtopic {
+    margin: 20px 0;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.pageEditor .subtopic__top {
+    display: flex;
+}
+
+.pageEditor .subtopic__bottom {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.pageEditor .subtopic__bottom span {
+    width: 25%;
+    display: flex;
+    justify-content: space-around;
+}
