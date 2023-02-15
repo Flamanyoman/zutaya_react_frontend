@@ -115,7 +115,10 @@ const Home = () => {
             withCredentials: true,
           })
           .then(({ data }) => setUser({ data }))
-          .catch((err) => setUser(null));
+          .catch((err) => {
+            setUser(null);
+            console.log(err);
+          });
       })
       .catch((err) => {
         setPages({ ...pages, error: true, pending: false });
@@ -193,11 +196,6 @@ const Home = () => {
         );
     }
   }, [values.loadMore]);
-
-  // function when an event card is clicked
-  const handleClick = () => {
-    navigate('/ticket');
-  };
 
   // function when the load more arrow is clickeds
   const handleLoadMore = () => {
@@ -385,7 +383,13 @@ const Home = () => {
                   ) : (
                     values.tickets &&
                     values.tickets.map((ticket, i) => (
-                      <div className='shortCards' onClick={handleClick} key={i}>
+                      <div
+                        className='shortCards'
+                        onClick={() => {
+                          navigate(`/ticket/${ticket._id}`);
+                        }}
+                        key={i}
+                      >
                         <img
                           src={`data:${ticket.img.type};base64, ${Buffer.from(
                             ticket.img.data.data

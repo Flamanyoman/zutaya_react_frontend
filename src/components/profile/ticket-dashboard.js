@@ -65,8 +65,6 @@ const Ticket_Dashboard = () => {
     hype: '',
     expectedIncome: '',
     realizedIncome: '',
-    availableTickets: '',
-    soldTickets: '',
 
     tickets: null,
     img: null,
@@ -140,6 +138,7 @@ const Ticket_Dashboard = () => {
                   Object.keys(data.eventsHosted).length
                 } events hosted, ${data.accountType}`,
               tags: `${data.name}, ${data.accountType}, ${ticket.data.data.eventName}, Ticket Adnan account`,
+
               error: false,
               pending: false,
             });

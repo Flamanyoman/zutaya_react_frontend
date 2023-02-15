@@ -32,7 +32,7 @@ function App() {
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='account' element={<Account />} />
         <Route path='guests' element={<Guests />} />
-        <Route path='ticket' element={<Ticket />} />
+        <Route path='ticket/:id' element={<Ticket />} />
         <Route path='create-page' element={<PageCreator />} />
         <Route path='edit-page' element={<PageEditor />} />
       </Routes>

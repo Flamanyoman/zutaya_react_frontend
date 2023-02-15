@@ -106,7 +106,7 @@ const Login = () => {
         })
         .catch(({ response }) => {
           setValues({ ...values, pending1: false });
-          response.data.error
+          response
             ? setPopup(true)
             : setValues({
                 ...values,
