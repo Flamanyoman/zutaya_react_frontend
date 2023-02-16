@@ -134,8 +134,8 @@ const Ticket = () => {
   useEffect(() => {
     let arr = [];
 
-    // create an array for the number of tickets available
     if (values.tickets) {
+      // create an array for the number of tickets selected
       values.tickets[0].map(() => {
         arr.push(0);
 
@@ -144,30 +144,44 @@ const Ticket = () => {
     }
   }, [id, values.tickets]);
 
+  // check how many tickets are available for purchase
+  const howManyTickets = (i) => {
+    let ticketDifference =
+      parseInt(values.tickets[0][i].quantity) - values.tickets[0][i].sold;
+
+    if (ticketDifference < parseInt(values.tickets[0][i].number)) {
+      return ticketDifference;
+    } else {
+      return values.tickets[0][i].number;
+    }
+  };
+
   // functions to add and increase purchased
   // if tickets purchased is less than max available tickets per user
-  const handleAddTicket = (number, i) => {
-    if (parseInt(number) > ticketNum[i]) {
+  const [subTotal, setSubTotal] = useState(0);
+
+  const handleAddTicket = (number, i, price) => {
+    if (howManyTickets(i) > ticketNum[i]) {
       let arr = [...ticketNum];
       arr[i] = arr[i] + 1;
+
+      setSubTotal(subTotal + parseInt(price));
+
       setTicketNum(arr);
     }
   };
 
   // functions to subtract and remove purchased
   // if tickets purchased is greater than 0 available tickets per user
-  const handleSubTicket = (number, i) => {
+  const handleSubTicket = (i, price) => {
     if (ticketNum[i] > 0) {
       let arr = [...ticketNum];
       arr[i] = arr[i] - 1;
+
+      setSubTotal(subTotal - parseInt(price));
+
       setTicketNum(arr);
     }
-  };
-
-  const subtotal = () => {
-    let totalAmount = ticketNum[0] * values.tickets[0][0].price;
-
-    return totalAmount;
   };
 
   const text = 'Welcome to Ticket Adnan';
@@ -320,18 +334,22 @@ const Ticket = () => {
                                 <RemoveIcon
                                   className='icon__button'
                                   onClick={() =>
-                                    handleSubTicket(ticket.number, i)
+                                    handleSubTicket(i, ticket.price)
                                   }
                                 />
                               </Tooltip>
                               <p>
-                                {ticketNum[i]} / {ticket.number}
+                                {ticketNum[i]} / {howManyTickets(i)}
                               </p>
                               <Tooltip title='Add ticket'>
                                 <AddIcon
                                   className='icon__button'
                                   onClick={() =>
-                                    handleAddTicket(ticket.number, i)
+                                    handleAddTicket(
+                                      ticket.number,
+                                      i,
+                                      ticket.price
+                                    )
                                   }
                                 />
                               </Tooltip>
@@ -344,7 +362,7 @@ const Ticket = () => {
                 <br />
                 Total purchase:
                 <CurrencyFormat
-                  value={subtotal()}
+                  value={subTotal}
                   displayType={'text'}
                   thousandSeparator={true}
                   prefix={'₦'}
