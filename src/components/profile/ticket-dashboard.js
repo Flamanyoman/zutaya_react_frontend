@@ -211,7 +211,7 @@ const Ticket_Dashboard = () => {
     }
   }, [user, values.tickets]);
 
-  // function to set color code using events
+  // function to set scanning using events date
   const status = (event) => {
     // compare the date formates
 

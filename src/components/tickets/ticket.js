@@ -14,15 +14,19 @@ import CurrencyFormat from 'react-currency-format';
 import Helmet from 'react-helmet';
 import { userContext } from '../../contexts/userContext';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { URL } from '../../App';
 import LoadingSpin from 'react-loading-spin';
 import { Buffer } from 'buffer';
 import moment from 'moment';
+import { debounce } from 'lodash';
 
 const Ticket = () => {
   // function to prevent data from being sent to the server multiple times, by aborting after first send
   const controller = new AbortController();
+
+  // initialize use navigate hook
+  const navigate = useNavigate();
 
   // user data
   const { user, setUser } = useContext(userContext);
@@ -39,6 +43,7 @@ const Ticket = () => {
   });
 
   const [values, setValues] = useState({
+    id: '',
     name: '',
     state: '',
     location: '',
@@ -56,6 +61,16 @@ const Ticket = () => {
     tickets: null,
 
     img: null,
+
+    // errors which occur in the process of ticket purchase
+    purchaseErr: false,
+    purchaseErrMsg: '',
+
+    purchasePending: false,
+  });
+
+  const [popup, setPopup] = useState({
+    popup1: false,
   });
 
   // get the end url from the terminal ie information/:id
@@ -74,6 +89,7 @@ const Ticket = () => {
       .then(({ data }) => {
         setValues({
           ...values,
+          id: data._id,
           name: data.eventName,
           state: data.state,
           location: data.location,
@@ -184,6 +200,73 @@ const Ticket = () => {
     }
   };
 
+  // function to set if ticket can be purchased using events date
+  const status = (event) => {
+    // compare the date formates
+
+    // if today is after event day, prevent purchase
+    if (moment(event).isBefore(new Date())) {
+      return false;
+    }
+    if (moment(event).isSameOrAfter(new Date())) {
+      return true;
+    }
+  };
+
+  // code block to handle when the user clicks to purchase an event ticket
+  const handlePurchase = () => {
+    if (subTotal === 0) {
+      setValues({
+        ...values,
+        purchaseErr: true,
+        purchaseErrMsg: 'Please select the number of tickets to purchase',
+      });
+    } else if (!user) {
+      setPopup({ ...popup, popup1: true });
+    } else {
+      setValues({
+        ...values,
+        purchaseErr: false,
+        purchaseErrMsg: '',
+
+        purchasePending: true,
+      });
+
+      // create an id for user ticket
+      // function gotten from https://stackoverflow.com/questions/48006903/react-unique-id-generation
+      function guidGenerator() {
+        var S4 = function () {
+          return (((1 + Math.random()) * 0x10000) | 0)
+            .toString(16)
+            .substring(1);
+        };
+        return S4() + S4() + '-' + 'zutayah';
+      }
+      // axios to send user information to the database
+      const sendData = {
+        _id: values.id,
+        amount: subTotal,
+        ticket: [ticketNum],
+        ticketId: guidGenerator(),
+      };
+
+      axios
+        .post(`${URL}/ticket/purchase`, sendData, {
+          signal: controller.signal,
+          withCredentials: true,
+        })
+        .then((data) => {
+          console.log(data);
+
+          // allow qr code to display
+          setQr(true);
+
+          controller.abort();
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   const text = 'Welcome to Ticket Adnan';
 
   const [qr, setQr] = useState(false);
@@ -195,10 +278,6 @@ const Ticket = () => {
       setSrc(data);
     });
   }, [qr]);
-
-  const handlePurchase = () => {
-    setQr(true);
-  };
 
   return (
     <div className='tickets'>
@@ -369,9 +448,29 @@ const Ticket = () => {
                   renderText={(value) => <p>{value}</p>}
                 />
                 <br />
-                <button className='gradient' onClick={handlePurchase}>
-                  Purchase
-                </button>
+                {status(values.date) && (
+                  <button
+                    className='gradient'
+                    onClick={debounce(handlePurchase, 1000, {
+                      leading: true,
+                      trailing: false,
+                    })}
+                  >
+                    {values.purchasePending ? (
+                      <LoadingSpin
+                        size='15px'
+                        width='1.7px'
+                        secondaryColor='#007FFF'
+                        primaryColor='#e7ebf0'
+                      />
+                    ) : (
+                      'Purchase'
+                    )}
+                  </button>
+                )}
+                {values.purchaseErr && (
+                  <small className='error'>{values.purchaseErrMsg}</small>
+                )}
               </div>
             )}
 
@@ -380,6 +479,41 @@ const Ticket = () => {
                 <img src={src} alt='Ticket Adnan QR' />
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* users that are not logged in  */}
+      {popup.popup1 && (
+        <div className='popup__main'>
+          <div
+            className='popup__hide'
+            onClick={() => {
+              setPopup({ ...popup, popup1: false });
+            }}
+          ></div>
+          <div className='popup__card shadow-box'>
+            <h1 className='login__text'>Please Log in</h1>
+            <p>
+              To purchase a ticket, you have to register on the platform as a
+              guest by creating an account. Please head over to the log in page
+              to create an account
+            </p>
+
+            <div className='popup__buttons'>
+              <button className='gradient' onClick={() => navigate('/login')}>
+                Log in
+              </button>
+
+              <button
+                className='error__button'
+                onClick={() => {
+                  setPopup({ ...popup, popup1: false });
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

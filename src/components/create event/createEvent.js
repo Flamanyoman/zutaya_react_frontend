@@ -1416,8 +1416,10 @@ const CreateEvent = () => {
               create an account
             </p>
 
-            <div className='popup__buttons' onClick={() => navigate('/login')}>
-              <button className='gradient'>Log in</button>
+            <div className='popup__buttons'>
+              <button className='gradient' onClick={() => navigate('/login')}>
+                Log in
+              </button>
 
               <button
                 className='error__button'
