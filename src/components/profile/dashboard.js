@@ -53,6 +53,7 @@ const Dashboard = () => {
 
     eventsHostedNum: 0,
 
+    expectedGuests: [],
     guestScanned: 0,
     guestPercentage: 0,
 
@@ -105,15 +106,24 @@ const Dashboard = () => {
     });
   };
 
+  // function to round up numbers
+  // gotten from https://stackoverflow.com/questions/5191088/how-to-round-up-a-number-in-javascript
+  function roundUp(num, precision) {
+    precision = Math.pow(10, precision);
+    return Math.ceil(num * precision) / precision;
+  }
+
   useEffect(() => {
     if (user && user.data.accountType === 'Host') {
+      console.log(user);
+
       // sum of all available tickets
       // variables for calculations
       let availableTickets = 0;
       let soldTickets = 0;
       let ticketPercentage = 0;
       let guestPercentage = 0;
-      let incomePercentage = 0;
+      let incomePercentages = 0;
 
       user.data.eventsHosted.map((ticket) => {
         availableTickets += ticket.totalAvailableTickets;
@@ -133,11 +143,11 @@ const Dashboard = () => {
 
       // if user expected income is above 0
       // prevents js from computing NaN
-      if (user.data.expected > 0) {
-        incomePercentage =
+      if (user.data.income.realized > 0) {
+        incomePercentages =
           (user.data.income.realized / user.data.income.expected) * 100;
       } else {
-        incomePercentage = 0;
+        incomePercentages = 0;
       }
 
       // set page values
@@ -148,11 +158,12 @@ const Dashboard = () => {
         soldTickets,
         ticketPercentage,
 
+        expectedGuests: user.data.guestList.length,
         eventsHostedNum: user.data.eventsHosted.length,
 
         projectedIncome: user.data.income.expected,
         realizedIncome: user.data.income.realized,
-        incomePercentage,
+        incomePercentage: incomePercentages,
       });
     }
   }, [user]);
@@ -189,21 +200,21 @@ const Dashboard = () => {
   const status = (event) => {
     // compare the date formates
 
-    if (moment(event.dateStamp).isAfter(new Date())) {
+    if (moment(event.dateStamp).isAfter(new Date(), 'day')) {
       return {
         statusName: 'Pending..',
         statusClass: 'status orange',
       };
     }
 
-    if (moment(event.dateStamp).isSame(new Date())) {
+    if (moment(event.dateStamp).isSame(new Date(), 'day')) {
       return {
         statusName: 'Ongoing...',
         statusClass: 'status dark',
       };
     }
 
-    if (moment(event.dateStamp).isBefore(new Date())) {
+    if (moment(event.dateStamp).isBefore(new Date(), 'day')) {
       return {
         statusName: 'Review.',
         statusClass: 'status purple',
@@ -372,7 +383,7 @@ const Dashboard = () => {
                   <div>
                     <small>Tickets</small>
                     <span>Available: {values.availableTickets}</span>
-                    <h1>{values.ticketPercentage}%</h1>
+                    <h1>{roundUp(values.ticketPercentage, 1)}%</h1>
                     <span>Sold: {values.soldTickets}</span>
                   </div>
                   <div>
@@ -393,8 +404,8 @@ const Dashboard = () => {
                 <div className='card'>
                   <div>
                     <small>Guests</small>
-                    <span>Expected: {values.soldTickets}</span>
-                    <h1>{values.guestPercentage}%</h1>
+                    <span>Expected: {values.expectedGuests}</span>
+                    <h1>{roundUp(values.guestPercentage, 1)}%</h1>
                     <span>Scanned: {values.guestScanned}</span>
                   </div>
                   <div>
@@ -415,7 +426,7 @@ const Dashboard = () => {
                         renderText={(value) => <div>{value}</div>}
                       />
                     </span>
-                    <h1>{values.incomePercentage}%</h1>
+                    <h1>{roundUp(values.incomePercentage, 1)}%</h1>
                     <span>
                       Realized:{' '}
                       <CurrencyFormat
@@ -509,27 +520,29 @@ const Dashboard = () => {
                       <button className='gradient'>See all</button>
                     </div>
                     <div className='card-body'>
-                      {user.data.guestList.map((guest) => (
-                        <div className='costumer' key={guest._id}>
-                          <div className='info'>
-                            <img
-                              src={
-                                guest.profilePic ? guest.profilePic : profile
-                              }
-                              alt='ticket adnan'
-                              width='40px'
-                              height='40px'
-                              loading='lazy'
-                            />
+                      {user.data.guestList
+                        .filter((guest, i) => i < 5)
+                        .map((guest) => (
+                          <div className='costumer' key={guest._id}>
+                            <div className='info'>
+                              <img
+                                src={
+                                  guest.profilePic ? guest.profilePic : profile
+                                }
+                                alt='ticket adnan'
+                                width='40px'
+                                height='40px'
+                                loading='lazy'
+                              />
 
-                            <div>
-                              <h4>{guest.name}</h4>
-                              <small>{guest.accountType}</small>
+                              <div>
+                                <h4>{guest.name}</h4>
+                                <small>{guest.accountType}</small>
+                              </div>
                             </div>
+                            <div className='contact'></div>
                           </div>
-                          <div className='contact'></div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </div>

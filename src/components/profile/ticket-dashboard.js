@@ -65,6 +65,7 @@ const Ticket_Dashboard = () => {
     hype: '',
     expectedIncome: '',
     realizedIncome: '',
+    guests: [],
 
     tickets: null,
     img: null,
@@ -75,6 +76,7 @@ const Ticket_Dashboard = () => {
 
     eventsHostedNum: 0,
 
+    expectedGuests: 0,
     guestScanned: 0,
     guestPercentage: 0,
 
@@ -103,6 +105,7 @@ const Ticket_Dashboard = () => {
             withCredentials: true,
           })
           .then((ticket) => {
+            console.log(ticket.data.data);
             setValues({
               ...values,
               name: ticket.data.data.eventName,
@@ -115,10 +118,12 @@ const Ticket_Dashboard = () => {
               org: ticket.data.data.org.orgName,
               hype: ticket.data.data.hype,
               tickets: ticket.data.data.tickets,
+              guests: ticket.data.data.guests,
               expectedIncome: ticket.data.data.income.expected,
               realizedIncome: ticket.data.data.income.realized,
               availableTickets: ticket.data.data.totalAvailableTickets,
               soldTickets: ticket.data.data.totalSoldTickets,
+              expectedGuests: ticket.data.data.guests.length,
 
               // convert image from buffer to regular image from
               // https://stackoverflow.com/questions/70076193/how-to-convert-mongodb-buffer-to-image-in-react-node-express
@@ -165,6 +170,13 @@ const Ticket_Dashboard = () => {
     });
   };
 
+  // function to round up numbers
+  // gotten from https://stackoverflow.com/questions/5191088/how-to-round-up-a-number-in-javascript
+  function roundUp(num, precision) {
+    precision = Math.pow(10, precision);
+    return Math.ceil(num * precision) / precision;
+  }
+
   useEffect(() => {
     if (user && user.data.accountType === 'Host' && values.tickets) {
       // sum of all available tickets
@@ -174,9 +186,6 @@ const Ticket_Dashboard = () => {
       let ticketPercentage = 0;
       let guestPercentage = 0;
       let incomePercentage = 0;
-
-      availableTickets = values.availableTickets;
-      soldTickets = values.soldTickets;
 
       // if available tickets is above 0
       // prevents js from computing NaN
@@ -207,6 +216,7 @@ const Ticket_Dashboard = () => {
         projectedIncome: values.expectedIncome,
         realizedIncome: values.realizedIncome,
         incomePercentage,
+        ticketPercentage,
       });
     }
   }, [user, values.tickets]);
@@ -216,10 +226,10 @@ const Ticket_Dashboard = () => {
     // compare the date formates
 
     // if date of event === today, prevent scanning
-    if (moment(event).isAfter(new Date())) {
+    if (moment(event).isAfter(new Date(), 'day')) {
       return false;
     }
-    if (moment(event).isSameOrBefore(new Date())) {
+    if (moment(event).isSameOrBefore(new Date(), 'day')) {
       return true;
     }
   };
@@ -385,7 +395,7 @@ const Ticket_Dashboard = () => {
                   <div>
                     <small>Tickets</small>
                     <span>Available: {values.availableTickets}</span>
-                    <h1>{values.ticketPercentage}%</h1>
+                    <h1>{roundUp(values.ticketPercentage, 1)}%</h1>
                     <span>Sold: {values.soldTickets}</span>
                   </div>
                   <div>
@@ -406,8 +416,8 @@ const Ticket_Dashboard = () => {
                 <div className='card'>
                   <div>
                     <small>Guests</small>
-                    <span>Expected: {values.soldTickets}</span>
-                    <h1>{values.guestPercentage}%</h1>
+                    <span>Expected: {values.expectedGuests}</span>
+                    <h1>{roundUp(values.guestPercentage, 1)}%</h1>
                     <span>Scanned: {values.guestScanned}</span>
                   </div>
                   <div>
@@ -428,7 +438,7 @@ const Ticket_Dashboard = () => {
                         renderText={(value) => <div>{value}</div>}
                       />
                     </span>
-                    <h1>{values.incomePercentage}%</h1>
+                    <h1>{roundUp(values.incomePercentage, 1)}%</h1>
                     <span>
                       Realized:{' '}
                       <CurrencyFormat
@@ -568,27 +578,32 @@ const Ticket_Dashboard = () => {
                       <button className='gradient'>See all</button>
                     </div>
                     <div className='card-body'>
-                      {user.data.guestList.map((guest) => (
-                        <div className='costumer' key={guest._id}>
-                          <div className='info'>
-                            <img
-                              src={
-                                guest.profilePic ? guest.profilePic : profile
-                              }
-                              alt='ticket adnan'
-                              width='40px'
-                              height='40px'
-                              loading='lazy'
-                            />
+                      {/* show only 5 guests  */}
+                      {values.guests
+                        .filter((guest, i) => i < 5)
+                        .map((guest) => (
+                          <div className='costumer' key={guest.id._id}>
+                            <div className='info'>
+                              <img
+                                src={
+                                  guest.id.profilePic
+                                    ? guest.id.profilePic
+                                    : profile
+                                }
+                                alt='ticket adnan'
+                                width='40px'
+                                height='40px'
+                                loading='lazy'
+                              />
 
-                            <div>
-                              <h4>{guest.name}</h4>
-                              <small>{guest.accountType}</small>
+                              <div>
+                                <h4>{guest.id.name}</h4>
+                                <small>{guest.id.accountType}</small>
+                              </div>
                             </div>
+                            <div className='contact'></div>
                           </div>
-                          <div className='contact'></div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </div>

@@ -40,6 +40,11 @@ const Account = () => {
     refresh: 0,
   });
 
+  const [values, setValues] = useState({
+    eventsAttended: [],
+    hostList: [],
+  });
+
   // use effect that gets user data as priority before getting page data
   useEffect(() => {
     // scroll to top of the page
@@ -64,6 +69,8 @@ const Account = () => {
           error: false,
           pending: false,
         });
+
+        setValues({ ...values, eventsAttended: data.eventsAttended });
       })
       .catch((err) => {
         setUser(null);
@@ -91,6 +98,32 @@ const Account = () => {
       setUserBank(userBankName);
     }
   }, [user]);
+
+  // function to set color code using events
+  const status = (event) => {
+    // compare the date formates
+
+    if (moment(event.dateStamp).isAfter(new Date(), 'day')) {
+      return {
+        statusName: 'Pending..',
+        statusClass: 'status orange',
+      };
+    }
+
+    if (moment(event.dateStamp).isSame(new Date(), 'day')) {
+      return {
+        statusName: 'Ongoing...',
+        statusClass: 'status dark',
+      };
+    }
+
+    if (moment(event.dateStamp).isBefore(new Date(), 'day')) {
+      return {
+        statusName: 'Review.',
+        statusClass: 'status purple',
+      };
+    }
+  };
 
   // logout by deleting login credential cookies
   const handleLogout = () => {
@@ -290,7 +323,7 @@ const Account = () => {
                 <div className='projects'>
                   <div className='grid-card'>
                     <div className='card-header'>
-                      <h3>Tickets purchased</h3>
+                      <h3>Events Purchased</h3>
                     </div>
 
                     <div className='card-body'>
@@ -304,12 +337,15 @@ const Account = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {user.data.eventsAttended.map((event, i) => (
+                            {values.eventsAttended.map((event, i) => (
                               <tr key={i}>
-                                <td>UI/UX design</td>
-                                <td>UI team</td>
+                                <td>{event.id.eventName}</td>
+                                <td>{event.id.host.hostName}</td>
                                 <td>
-                                  <span className='status purple'></span>Review.
+                                  <span
+                                    className={status(event.id).statusClass}
+                                  ></span>
+                                  {status(event.id).statusName}
                                 </td>
                               </tr>
                             ))}
@@ -330,11 +366,15 @@ const Account = () => {
                     </div>
 
                     <div className='card-body'>
-                      {user.data.guestList.map((guest, i) => (
+                      {values.eventsAttended.map((guest, i) => (
                         <div className='costumer' key={i}>
                           <div className='info'>
                             <img
-                              src={profile}
+                              src={
+                                guest.id.host.profilePic
+                                  ? guest.id.host.profilePic
+                                  : profile
+                              }
                               alt='ticket adnan'
                               width='40px'
                               height='40px'
@@ -342,8 +382,8 @@ const Account = () => {
                             />
 
                             <div>
-                              <h4>Yound Thug</h4>
-                              <small>Host</small>
+                              <h4>{guest.id.host.hostName}</h4>
+                              <small>{guest.id.host.hostSocial}</small>
                             </div>
                           </div>
 

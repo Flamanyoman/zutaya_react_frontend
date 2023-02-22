@@ -205,10 +205,10 @@ const Ticket = () => {
     // compare the date formates
 
     // if today is after event day, prevent purchase
-    if (moment(event).isBefore(new Date())) {
+    if (moment(event).isBefore(new Date(), 'day')) {
       return false;
     }
-    if (moment(event).isSameOrAfter(new Date())) {
+    if (moment(event).isSameOrAfter(new Date(), 'day')) {
       return true;
     }
   };
@@ -246,8 +246,8 @@ const Ticket = () => {
       const sendData = {
         _id: values.id,
         amount: subTotal,
-        ticket: [ticketNum],
-        ticketId: guidGenerator(),
+        ticket: ticketNum,
+        secret: guidGenerator(),
       };
 
       axios
@@ -256,28 +256,43 @@ const Ticket = () => {
           withCredentials: true,
         })
         .then((data) => {
-          console.log(data);
-
-          // allow qr code to display
-          setQr(true);
+          setUser({ data });
 
           controller.abort();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          setValues({
+            ...values,
+            purchaseErr: true,
+            purchaseErrMsg: 'Error occured! Refresh the page and try again',
+            purchasePending: false,
+          });
+        });
     }
   };
 
-  const text = 'Welcome to Ticket Adnan';
-
+  const [src, setSrc] = useState('');
   const [qr, setQr] = useState(false);
 
-  const [src, setSrc] = useState('');
-
   useEffect(() => {
-    QRCode.toDataURL(text).then((data) => {
-      setSrc(data);
-    });
-  }, [qr]);
+    // allow qr code to
+
+    if (user) {
+      let qrInfo = user.data.eventsAttended.find((event) => {
+        return event.id.eventName === values.name;
+      });
+
+      if (qrInfo) {
+        if (status) setQr(true);
+
+        const text = qrInfo.secret;
+
+        QRCode.toDataURL(text).then((data) => {
+          setSrc(data);
+        });
+      }
+    }
+  }, [user]);
 
   return (
     <div className='tickets'>
