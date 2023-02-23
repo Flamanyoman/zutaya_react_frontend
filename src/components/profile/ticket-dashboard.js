@@ -105,7 +105,6 @@ const Ticket_Dashboard = () => {
             withCredentials: true,
           })
           .then((ticket) => {
-            console.log(ticket.data.data);
             setValues({
               ...values,
               name: ticket.data.data.eventName,

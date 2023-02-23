@@ -117,7 +117,6 @@ const Home = () => {
           .then(({ data }) => setUser({ data }))
           .catch((err) => {
             setUser(null);
-            console.log(err);
           });
       })
       .catch((err) => {

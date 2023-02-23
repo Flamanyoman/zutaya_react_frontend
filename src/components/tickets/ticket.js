@@ -213,6 +213,17 @@ const Ticket = () => {
     }
   };
 
+  // function to show qr code reciept: qr code reciept is hidden to unsure security before event starts
+  const scannable = (event) => {
+    if (moment(event).isSameOrBefore(new Date(), 'day')) {
+      return true;
+    }
+
+    if (moment(event).isAfter(new Date(), 'day')) {
+      return false;
+    }
+  };
+
   // code block to handle when the user clicks to purchase an event ticket
   const handlePurchase = () => {
     if (subTotal === 0) {
@@ -248,6 +259,7 @@ const Ticket = () => {
         amount: subTotal,
         ticket: ticketNum,
         secret: guidGenerator(),
+        date: values.date,
       };
 
       axios
@@ -256,7 +268,10 @@ const Ticket = () => {
           withCredentials: true,
         })
         .then((data) => {
-          setUser({ data });
+          setUser(data);
+
+          // refresh the page
+          navigate(0);
 
           controller.abort();
         })
@@ -273,23 +288,36 @@ const Ticket = () => {
 
   const [src, setSrc] = useState('');
   const [qr, setQr] = useState(false);
+  const [pendingQr, setPendingQr] = useState(false);
 
   useEffect(() => {
     // allow qr code to
 
     if (user) {
+      // if event name is on the users database
+      // this means the user has bought the ticket since ticket names are unique
       let qrInfo = user.data.eventsAttended.find((event) => {
         return event.id.eventName === values.name;
       });
 
-      if (qrInfo) {
-        if (status) setQr(true);
+      // if event date tallies with the event date in user db
+      // this means user has the latest version of that ticket since weekly and monthly ticket dates change
+      let qrDate = user.data.eventsAttended.find((event) => {
+        return event.date == values.date;
+      });
 
-        const text = qrInfo.secret;
+      if (qrInfo && qrDate) {
+        if (scannable(values.date)) {
+          setQr(true);
 
-        QRCode.toDataURL(text).then((data) => {
-          setSrc(data);
-        });
+          const text = qrInfo.secret;
+
+          QRCode.toDataURL(text).then((data) => {
+            setSrc(data);
+          });
+        } else {
+          setPendingQr(true);
+        }
       }
     }
   }, [user]);
@@ -397,7 +425,7 @@ const Ticket = () => {
           </div>
 
           <div className='tickets__side'>
-            {!qr && (
+            {!pendingQr && !qr && (
               <div className='tickets__purchase'>
                 <div className='shadow-box'>
                   <table width='100%'>
@@ -492,6 +520,15 @@ const Ticket = () => {
             {qr && (
               <div className='ticktets__qr'>
                 <img src={src} alt='Ticket Adnan QR' />
+              </div>
+            )}
+
+            {pendingQr && (
+              <div className='tickets__pendingQr'>
+                <p>
+                  QR code will be available{' '}
+                  {moment(values.date).format('Do MMMM YYYY')}
+                </p>
               </div>
             )}
           </div>

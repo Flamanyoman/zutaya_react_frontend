@@ -115,7 +115,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user && user.data.accountType === 'Host') {
-      console.log(user);
 
       // sum of all available tickets
       // variables for calculations

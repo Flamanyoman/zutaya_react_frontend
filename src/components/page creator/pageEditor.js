@@ -238,13 +238,11 @@ const PageEditor = () => {
         withCredentials: true,
       })
       .then((data) => {
-        console.log(data);
 
         controller.abort();
       })
       .catch((err) => {
         if (err.status === 404) {
-          console.log('Page not found');
         }
       });
   };
@@ -591,7 +589,6 @@ const PageEditor = () => {
         withCredentials: true,
       })
       .then(({ data }) => {
-        console.log(data);
         handleRefresh();
 
         controller.abort();
