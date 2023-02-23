@@ -12,6 +12,9 @@ import { useContext } from 'react';
 import { userContext } from '../../contexts/userContext';
 import { debounce } from 'lodash';
 import { URL } from '../../App';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const Login = () => {
   // function to prevent data from being sent to the server multiple times, by aborting after first send
@@ -78,15 +81,24 @@ const Login = () => {
   // values for log in
   const [values, setValues] = useState({
     email: '',
+
+    password: '',
+    showPassword: false,
+
     pending1: false,
     pending2: false,
   });
+
+  // function to hide or show password
+  const handleShowPassword = () => {
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
 
   // function to log in
   const handleLogin = (e) => {
     e.preventDefault();
 
-    setValues({ ...values, pending1: true });
+    setValues({ ...values, pending1: true, showPassword: false });
 
     if (values.email) {
       setValues({ ...values, pending1: true });
@@ -201,6 +213,7 @@ const Login = () => {
                   trailing: false,
                 })}
               >
+                {/* user email  */}
                 <input
                   onChange={(e) =>
                     setValues({ ...values, email: e.target.value })
@@ -210,6 +223,27 @@ const Login = () => {
                   required
                   value={values.email}
                 />
+                {/* user password */}
+                <input
+                  type={values.showPassword ? 'text' : 'password'}
+                  placeHolder='Type in password'
+                  required
+                  value={values.password}
+                  onChange={(e) =>
+                    setValues({ ...values, password: e.target.value })
+                  }
+                />
+
+                {/* check box to determine if event is single or reoccuring */}
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Checkbox onClick={handleShowPassword} />}
+                    label={
+                      values.showPassword ? 'Hide password?' : 'Show password?'
+                    }
+                  />
+                </FormGroup>
+
                 <button type='submit' className='gradient'>
                   {values.pending1 ? (
                     <LoadingSpin
