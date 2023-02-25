@@ -80,10 +80,30 @@ const Login = () => {
 
   // values for log in
   const [values, setValues] = useState({
-    email: '',
+    // name input field
+    name: '',
+    nameErr: false,
+    nameErrMsg: '',
 
+    // email input field
+    email: '',
+    emailErr: false,
+    emailErrMsg: '',
+
+    // password input field
     password: '',
+    passwordErr: false,
+    passwordErrMsg: '',
+
     showPassword: false,
+
+    newAccount: false,
+    existingAccount: true,
+
+    loginErr: false,
+    loginErrMsg: '',
+    signupErr: false,
+    signupErrMsg: '',
 
     pending1: false,
     pending2: false,
@@ -94,15 +114,80 @@ const Login = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
 
+  // function to switch from login form to signup form
+  const handleNewAccount = () => {
+    setValues({ ...values, newAccount: true, existingAccount: false });
+    setPopup(false);
+  };
+
+  // function to switch from signup form to login form
+  const handleExistingAccount = () => {
+    setValues({ ...values, existingAccount: true, newAccount: false });
+  };
+
+  // code block to check for errors in input fields
+  // name error checker
+  const nameBlur = () => {
+    if (values.name.length < 3) {
+      setValues({
+        ...values,
+        nameErr: true,
+        nameErrMsg: 'Name must have more than 3 characters',
+      });
+    } else {
+      setValues({ ...values, nameErr: false, nameErrMsg: '' });
+    }
+  };
+
+  // email error checker
+  const emailBlur = () => {
+    if (values.email.length < 4) {
+      setValues({
+        ...values,
+        emailErr: true,
+        emailErrMsg: 'Please type in your email',
+      });
+    } else if (
+      // regex to ensure user is inputing an email
+      !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        values.email
+      )
+    ) {
+      setValues({
+        ...values,
+        emailErr: true,
+        emailErrMsg: 'Please ensure your email is correct',
+      });
+    } else {
+      setValues({ ...values, emailErr: false, emailErrMsg: '' });
+    }
+  };
+
+  // password error checker
+  const passwordBlur = () => {
+    if (values.password.length < 5) {
+      setValues({
+        ...values,
+        passwordErr: true,
+        passwordErrMsg: 'password must contain 5 or more characters',
+      });
+    } else {
+      setValues({ ...values, passwordErr: false, passwordErrMsg: '' });
+    }
+  };
+
   // function to log in
   const handleLogin = (e) => {
     e.preventDefault();
 
-    setValues({ ...values, pending1: true, showPassword: false });
+    setValues({ ...values, showPassword: false });
 
-    if (values.email) {
+    emailBlur();
+    passwordBlur();
+
+    if (!values.emailErr && !values.passwordErr) {
       setValues({ ...values, pending1: true });
-      const sendData = { email: values.email };
+      const sendData = { email: values.email, password: values.password };
 
       axios
         .post(`${URL}/login`, sendData, {
@@ -116,39 +201,55 @@ const Login = () => {
           setValues({ ...values, pending1: false, email: '' });
           controller.abort();
         })
-        .catch(({ response }) => {
-          setValues({ ...values, pending1: false });
-          response
-            ? setPopup(true)
-            : setValues({
-                ...values,
-                emailError: true,
-                emailErrorMsg: 'Something went wrong, try again',
-              });
+        .catch((err) => {
+          setValues({
+            ...values,
+            pending1: false,
+            loginErr: true,
+            loginErrMsg: err.response.data.message,
+          });
         });
     }
   };
 
   // section for sign up
-  const handleSignup = () => {
-    const sendData = { email: values.email };
+  const handleSignup = (e) => {
+    e.preventDefault();
+    const sendData = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
 
-    setValues({ ...values, pending2: true });
+    setValues({ ...values, showPassword: false });
+    nameBlur();
+    emailBlur();
+    passwordBlur();
 
-    axios
-      .post(`${URL}/signup`, sendData, {
-        signal: controller.signal,
-        withCredentials: true,
-      })
-      .then(({ data }) => {
-        setValues({ ...values, pending2: false });
-        setUser(data.data);
-        navigate(-1);
-        setPopup(false);
+    if ((!values.nameErr, !values.emailErr, !values.passwordErr)) {
+      setValues({ ...values, pending2: true });
 
-        controller.abort();
-      })
-      .catch((err) => setValues({ ...values, pending2: false }));
+      axios
+        .post(`${URL}/signup`, sendData, {
+          signal: controller.signal,
+          withCredentials: true,
+        })
+        .then(({ data }) => {
+          setValues({ ...values, pending2: false });
+          setUser(data.data);
+          navigate('/');
+
+          controller.abort();
+        })
+        .catch((err) => {
+          setValues({
+            ...values,
+            pending2: false,
+            signupErr: true,
+            signupErrMsg: err.response.data.message,
+          });
+        });
+    }
   };
 
   // let navigate = useNavigate();
@@ -206,57 +307,183 @@ const Login = () => {
             </div>
 
             <div className='login__buttons'>
-              <form
-                className='login__form'
-                onSubmit={debounce(handleLogin, 1000, {
-                  leading: true,
-                  trailing: false,
-                })}
-              >
-                {/* user email  */}
-                <input
-                  onChange={(e) =>
-                    setValues({ ...values, email: e.target.value })
-                  }
-                  type='email'
-                  placeholder='Login with E-mail'
-                  required
-                  value={values.email}
-                />
-                {/* user password */}
-                <input
-                  type={values.showPassword ? 'text' : 'password'}
-                  placeHolder='Type in password'
-                  required
-                  value={values.password}
-                  onChange={(e) =>
-                    setValues({ ...values, password: e.target.value })
-                  }
-                />
+              {values.existingAccount && !values.newAccount && (
+                <form
+                  className='login__form'
+                  onSubmit={debounce(handleLogin, 1000, {
+                    leading: true,
+                    trailing: false,
+                  })}
+                >
+                  {/* user email  */}
+                  <input
+                    onChange={(e) =>
+                      setValues({ ...values, email: e.target.value })
+                    }
+                    type='email'
+                    placeholder='Login with E-mail'
+                    required
+                    onBlur={emailBlur}
+                    value={values.email}
+                  />
+                  {values.emailErr && (
+                    <small className='error'>{values.emailErrMsg}</small>
+                  )}
 
-                {/* check box to determine if event is single or reoccuring */}
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox onClick={handleShowPassword} />}
-                    label={
-                      values.showPassword ? 'Hide password?' : 'Show password?'
+                  {/* user password */}
+                  <input
+                    type={values.showPassword ? 'text' : 'password'}
+                    placeHolder='Type in password'
+                    required
+                    value={values.password}
+                    onBlur={passwordBlur}
+                    onChange={(e) =>
+                      setValues({ ...values, password: e.target.value })
                     }
                   />
-                </FormGroup>
-
-                <button type='submit' className='gradient'>
-                  {values.pending1 ? (
-                    <LoadingSpin
-                      size='15px'
-                      width='1.7px'
-                      secondaryColor='#007FFF'
-                      primaryColor='#e7ebf0'
-                    />
-                  ) : (
-                    'Log in'
+                  {values.passwordErr && (
+                    <small className='error'>{values.passwordErrMsg}</small>
                   )}
-                </button>
-              </form>
+
+                  {/* check box to determine if event is single or reoccuring */}
+                  <FormGroup>
+                    <FormControlLabel
+                      control={<Checkbox onClick={handleShowPassword} />}
+                      label={
+                        values.showPassword
+                          ? 'Hide password?'
+                          : 'Show password?'
+                      }
+                    />
+                  </FormGroup>
+
+                  <button type='submit' className='gradient'>
+                    {values.pending1 ? (
+                      <LoadingSpin
+                        size='15px'
+                        width='1.7px'
+                        secondaryColor='#007FFF'
+                        primaryColor='#e7ebf0'
+                      />
+                    ) : (
+                      'Log in'
+                    )}
+                  </button>
+
+                  {values.loginErr && (
+                    <small className='error'>{values.loginErrMsg}</small>
+                  )}
+
+                  <br />
+                  <span className='login__text'>
+                    <p>
+                      <span>
+                        Not registered?{' '}
+                        <Link to='' onClick={handleNewAccount}>
+                          Create an account
+                        </Link>
+                      </span>
+                    </p>
+                  </span>
+                </form>
+              )}
+
+              {/* sign up form  */}
+              {values.newAccount && !values.existingAccount && (
+                <form
+                  className='login__form'
+                  onSubmit={debounce(handleSignup, 1000, {
+                    leading: true,
+                    trailing: false,
+                  })}
+                >
+                  {/* user email  */}
+                  <input
+                    onChange={(e) =>
+                      setValues({ ...values, name: e.target.value })
+                    }
+                    type='text'
+                    placeholder='Type in your name'
+                    required
+                    onBlur={nameBlur}
+                    value={values.name}
+                  />
+                  {values.nameErr && (
+                    <small className='error'>{values.nameErrMsg}</small>
+                  )}
+
+                  {/* user email  */}
+                  <input
+                    onChange={(e) =>
+                      setValues({ ...values, email: e.target.value })
+                    }
+                    type='email'
+                    placeholder='Login with E-mail'
+                    required
+                    onBlur={emailBlur}
+                    value={values.email}
+                  />
+                  {values.emailErr && (
+                    <small className='error'>{values.emailErrMsg}</small>
+                  )}
+
+                  {/* user password */}
+                  <input
+                    type={values.showPassword ? 'text' : 'password'}
+                    placeHolder='Type in password'
+                    required
+                    value={values.password}
+                    onBlur={passwordBlur}
+                    onChange={(e) =>
+                      setValues({ ...values, password: e.target.value })
+                    }
+                  />
+                  {values.passwordErr && (
+                    <small className='error'>{values.passwordErrMsg}</small>
+                  )}
+
+                  {/* check box to determine if event is single or reoccuring */}
+                  <FormGroup>
+                    <FormControlLabel
+                      control={<Checkbox onClick={handleShowPassword} />}
+                      label={
+                        values.showPassword
+                          ? 'Hide password?'
+                          : 'Show password?'
+                      }
+                    />
+                  </FormGroup>
+
+                  <button type='submit' className='gradient'>
+                    {values.pending2 ? (
+                      <LoadingSpin
+                        size='15px'
+                        width='1.7px'
+                        secondaryColor='#007FFF'
+                        primaryColor='#e7ebf0'
+                      />
+                    ) : (
+                      'Sign up'
+                    )}
+                  </button>
+
+                  {values.signupErr && (
+                    <small className='error'>{values.signupErrMsg}</small>
+                  )}
+
+                  <br />
+                  <span className='login__text'>
+                    <p>
+                      <span>
+                        Already have an account?{' '}
+                        <Link to='' onClick={handleExistingAccount}>
+                          Log in
+                        </Link>
+                      </span>
+                    </p>
+                  </span>
+                </form>
+              )}
 
               {/* <button className='login__facebook' onClick={handleClick}>
                 <FacebookIcon /> Login with Facebook
@@ -293,17 +520,8 @@ const Login = () => {
             </p>
 
             <div className='popup__buttons'>
-              <button className='gradient' onClick={handleSignup}>
-                {values.pending2 ? (
-                  <LoadingSpin
-                    size='15px'
-                    width='1.7px'
-                    secondaryColor='#007FFF'
-                    primaryColor='#e7ebf0'
-                  />
-                ) : (
-                  'Sign up'
-                )}
+              <button className='gradient' onClick={handleNewAccount}>
+                Sign up
               </button>
 
               <button className='error__button' onClick={() => setPopup(false)}>

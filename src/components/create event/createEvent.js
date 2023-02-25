@@ -508,7 +508,7 @@ const CreateEvent = () => {
   };
 
   const emailBlur = () => {
-    if (values.email < 4) {
+    if (values.email.length < 4) {
       setValues({
         ...values,
         emailErr: true,
