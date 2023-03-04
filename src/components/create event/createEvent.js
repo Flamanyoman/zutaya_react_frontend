@@ -856,7 +856,7 @@ const CreateEvent = () => {
           })
           .then((data) => {
             setPopup({ ...popup, pending2: false });
-            setUser(data);
+            setUser({ data });
 
             controller.abort();
           })
@@ -866,6 +866,7 @@ const CreateEvent = () => {
       }
     }
   };
+
 
   const handlePersonalaccount = (e) => {
     setValues({ ...values, personalAccount: e.target.value });
@@ -949,94 +950,88 @@ const CreateEvent = () => {
                     <small className='error'>{values.eventNameErrMsg}</small>
                   )}
 
-                  <div>
+                  <Stack spacing={3}>
                     <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <Stack spacing={3}>
-                        {/* Date */}
-                        <MobileDatePicker
-                          orientation='landscape'
-                          minDate={minDate}
-                          label='Event Date'
-                          inputFormat='DD/MM/YYYY'
-                          required
-                          value={values.date}
-                          onChange={handleChange}
-                          onBlur={dateBlur}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              sx={{ gridColumn: 'span 4' }}
-                            />
-                          )}
-                        />
-
-                        {values.dateErr && (
-                          <small className='error'>{values.dateErrMsg}</small>
+                      {/* Date */}
+                      <MobileDatePicker
+                        className='datePicker'
+                        orientation='landscape'
+                        minDate={minDate}
+                        label='Event Date'
+                        value={values.date}
+                        onChange={handleChange}
+                        onBlur={dateBlur}
+                        renderInput={(params) => (
+                          <TextField {...params} sx={{ gridColumn: '' }} />
                         )}
-
-                        {/* check box to determine if event is single or reoccuring */}
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Checkbox onClick={handleCheckBox} />}
-                            label='Reoccuring event?'
-                          />
-                        </FormGroup>
-
-                        {/* drop down to select how often event reoccures */}
-                        {values.reoccuring && (
-                          <Box sx={{ minWidth: 250 }}>
-                            <FormControl fullWidth>
-                              <InputLabel id='demo-simple-select-label'>
-                                Event repeats?
-                              </InputLabel>
-                              <Select
-                                labelId='demo-simple-select-label'
-                                id='demo-simple-select'
-                                value={values.repeat}
-                                label='Select your state'
-                                onChange={handleEventRepeat}
-                                onBlur={eventRepeatBlur}
-                              >
-                                <MenuItem value={'Weekly'}>Weekly</MenuItem>
-                                <MenuItem value={'Monthly'}>Monthly</MenuItem>
-                              </Select>
-                            </FormControl>
-                          </Box>
-                        )}
-
-                        {values.reoccuring && values.repeatErr && (
-                          <small className='error'>{values.repeatErrMsg}</small>
-                        )}
-
-                        {/* start time */}
-                        <Box sx={{ minWidth: 250 }}>
-                          <FormControl fullWidth>
-                            <InputLabel id='demo-simple-select-label'>
-                              Choose event time
-                            </InputLabel>
-                            <Select
-                              labelId='demo-simple-select-label'
-                              id='demo-simple-select'
-                              value={values.time}
-                              label='Select your state'
-                              onChange={handleTime}
-                              onBlur={timeBlur}
-                            >
-                              {time.map((time, num) => (
-                                <MenuItem value={time} key={num}>
-                                  {time}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Box>
-
-                        {values.timeErr && (
-                          <small className='error'>{values.timeErrMsg}</small>
-                        )}
-                      </Stack>
+                      />
                     </LocalizationProvider>
-                  </div>
+
+                    {values.dateErr && (
+                      <small className='error'>{values.dateErrMsg}</small>
+                    )}
+
+                    {/* check box to determine if event is single or reoccuring */}
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox onClick={handleCheckBox} />}
+                        label='Reoccuring event?'
+                      />
+                    </FormGroup>
+
+                    {/* drop down to select how often event reoccures */}
+                    {values.reoccuring && (
+                      <Box sx={{ minWidth: 250 }}>
+                        <FormControl fullWidth>
+                          <InputLabel id='demo-simple-select-label'>
+                            Event repeats?
+                          </InputLabel>
+                          <Select
+                            labelId='demo-simple-select-label'
+                            id='demo-simple-select'
+                            value={values.repeat}
+                            label='Select your state'
+                            onChange={handleEventRepeat}
+                            onBlur={eventRepeatBlur}
+                          >
+                            <MenuItem value={'Weekly'}>Weekly</MenuItem>
+                            <MenuItem value={'Monthly'}>Monthly</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    )}
+
+                    {values.reoccuring && values.repeatErr && (
+                      <small className='error'>{values.repeatErrMsg}</small>
+                    )}
+
+                    {/* start time */}
+                    <Box sx={{ minWidth: 250 }}>
+                      <FormControl fullWidth>
+                        <InputLabel id='demo-simple-select-label'>
+                          Choose event time
+                        </InputLabel>
+                        <Select
+                          labelId='demo-simple-select-label'
+                          id='demo-simple-select'
+                          value={values.time}
+                          label='Select your state'
+                          onChange={handleTime}
+                          onBlur={timeBlur}
+                        >
+                          {time.map((time, num) => (
+                            <MenuItem value={time} key={num}>
+                              {time}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    {values.timeErr && (
+                      <small className='error'>{values.timeErrMsg}</small>
+                    )}
+                  </Stack>
 
                   {/* Venue */}
                   <input

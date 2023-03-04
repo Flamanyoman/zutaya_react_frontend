@@ -338,7 +338,12 @@ const Account = () => {
                           </thead>
                           <tbody>
                             {values.eventsAttended.map((event, i) => (
-                              <tr key={i}>
+                              <tr
+                                key={i}
+                                onClick={() =>
+                                  navigate(`/ticket/${event.id._id}`)
+                                }
+                              >
                                 <td>{event.id.eventName}</td>
                                 <td>{event.id.host.hostName}</td>
                                 <td>

@@ -198,7 +198,7 @@ const Login = () => {
           setUser(data);
           navigate(-1);
 
-          setValues({ ...values, pending1: false, email: '' });
+          setValues({ ...values, pending1: false, email: '', password: '' });
           controller.abort();
         })
         .catch((err) => {
@@ -235,7 +235,13 @@ const Login = () => {
           withCredentials: true,
         })
         .then(({ data }) => {
-          setValues({ ...values, pending2: false });
+          setValues({
+            ...values,
+            pending2: false,
+            email: '',
+            password: '',
+            name: '',
+          });
           setUser(data.data);
           navigate('/');
 

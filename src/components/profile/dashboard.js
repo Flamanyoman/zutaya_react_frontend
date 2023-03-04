@@ -115,7 +115,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user && user.data.accountType === 'Host') {
-
       // sum of all available tickets
       // variables for calculations
       let availableTickets = 0;
@@ -463,26 +462,15 @@ const Dashboard = () => {
                           <tbody>
                             {user &&
                               user.data.eventsHosted.map((event) => (
-                                <tr key={event._id}>
-                                  <td
-                                    onClick={() =>
-                                      navigate(`/dashboard/ticket/${event._id}`)
-                                    }
-                                  >
-                                    {event.eventName}
-                                  </td>
-                                  <td
-                                    onClick={() =>
-                                      navigate(`/dashboard/ticket/${event._id}`)
-                                    }
-                                  >
-                                    {event.org && event.org.orgName}
-                                  </td>
-                                  <td
-                                    onClick={() =>
-                                      navigate(`/dashboard/ticket/${event._id}`)
-                                    }
-                                  >
+                                <tr
+                                  key={event._id}
+                                  onClick={() =>
+                                    navigate(`/dashboard/ticket/${event._id}`)
+                                  }
+                                >
+                                  <td>{event.eventName}</td>
+                                  <td>{event.org && event.org.orgName}</td>
+                                  <td>
                                     <span
                                       className={status(event).statusClass}
                                     ></span>
