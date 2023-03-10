@@ -245,8 +245,6 @@ const Ticket_Dashboard = () => {
     window.scrollTo(0, 0);
   };
 
-  console.log(videoRef.current);
-
   const handleQrErr = (err) => {
     if (err) {
       console.log(err);
