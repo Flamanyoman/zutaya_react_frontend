@@ -8,7 +8,7 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { ToggleContext } from '../../contexts/toggleContext';
 import Helmet from 'react-helmet';
 import { userContext } from '../../contexts/userContext';
@@ -23,6 +23,7 @@ import LocalBarIcon from '@mui/icons-material/LocalBar';
 import { Buffer } from 'buffer';
 import { URL } from '../../App';
 import moment from 'moment';
+import { QrReader } from 'react-qr-reader';
 
 const Ticket_Dashboard = () => {
   // function to prevent data from being sent to the server multiple times, by aborting after first send
@@ -83,6 +84,8 @@ const Ticket_Dashboard = () => {
     projectedIncome: 0,
     realizedIncome: 0,
     incomePercentage: 0,
+
+    startScan: false,
   });
 
   // use effect that gets user data as priority before getting page data
@@ -233,7 +236,33 @@ const Ticket_Dashboard = () => {
     }
   };
 
-  // convert date to dd/mm/yy format
+  // code block to scan qr codes
+  // if scan button is available, show the scan section
+  const handleStartScan = () => {
+    // scroll to top of the page
+    setValues({ ...values, startScan: true });
+
+    window.scrollTo(0, 0);
+  };
+
+  console.log(videoRef.current);
+
+  const handleQrErr = (err) => {
+    if (err) {
+      console.log(err);
+    }
+  };
+
+  const handleQrResult = (result) => {
+    if (result) {
+      console.log(result);
+    }
+  };
+
+  useEffect(() => {
+    if (values.startScan === true) {
+    }
+  }, [values.startScan]);
 
   // logout by deleting login credential cookies
   const handleLogout = () => {
@@ -294,7 +323,6 @@ const Ticket_Dashboard = () => {
 
       <div className='profile'>
         {toggle && <input type='checkbox' id='nav-toggle' checked />}
-
         <div className='profile__sidebar'>
           <div className='sidebar-brand'>
             <h2>
@@ -389,239 +417,286 @@ const Ticket_Dashboard = () => {
             </header>
 
             <main className='profile__main'>
-              <div className='cards'>
-                <div className='card'>
-                  <div>
-                    <small>Tickets</small>
-                    <span>Available: {values.availableTickets}</span>
-                    <h1>{roundUp(values.ticketPercentage, 1)}%</h1>
-                    <span>Sold: {values.soldTickets}</span>
-                  </div>
-                  <div>
-                    <span></span>
-                  </div>
-                </div>
-
-                <div className='card'>
-                  <div>
-                    <h1>{values.eventsHostedNum}</h1>
-                    <span>Event</span>
-                  </div>
-                  <div>
-                    <span></span>
-                  </div>
-                </div>
-
-                <div className='card'>
-                  <div>
-                    <small>Guests</small>
-                    <span>Expected: {values.expectedGuests}</span>
-                    <h1>{roundUp(values.guestPercentage, 1)}%</h1>
-                    <span>Scanned: {values.guestScanned}</span>
-                  </div>
-                  <div>
-                    <span></span>
-                  </div>
-                </div>
-
-                <div className='card gradient shadow-box'>
-                  <div>
-                    <small>Income</small>
-                    <span>
-                      Projected:{' '}
-                      <CurrencyFormat
-                        value={values.projectedIncome}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        prefix={'₦'}
-                        renderText={(value) => <div>{value}</div>}
-                      />
-                    </span>
-                    <h1>{roundUp(values.incomePercentage, 1)}%</h1>
-                    <span>
-                      Realized:{' '}
-                      <CurrencyFormat
-                        value={values.realizedIncome}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        prefix={'₦'}
-                        renderText={(value) => <div>{value}</div>}
-                      />
-                    </span>
-                  </div>
-                  <div>
-                    <span></span>
-                  </div>
-                </div>
-              </div>
-              <div className='recent-grid'>
-                <div className='projects'>
-                  <div className='tickets__main'>
-                    <div className='tickets__img'>
-                      <div
-                        style={{
-                          backgroundImage: `url('${values.img}')`,
-                        }}
-                      ></div>
-                      <img
-                        className='shadow-box'
-                        src={values.img}
-                        alt='ticket adnan img'
-                        loading='lazy'
-                      />
+              {!values.startScan && (
+                <div>
+                  <div className='cards'>
+                    <div className='card'>
+                      <div>
+                        <small>Tickets</small>
+                        <span>Available: {values.availableTickets}</span>
+                        <h1>{roundUp(values.ticketPercentage, 1)}%</h1>
+                        <span>Sold: {values.soldTickets}</span>
+                      </div>
+                      <div>
+                        <span></span>
+                      </div>
                     </div>
 
-                    <div className='tickets__body'>
-                      <div className='box'>
-                        <div>
-                          <h1>{values.name}</h1>
-                          <h4>
-                            <Tooltip title='Location'>
-                              <PlaceIcon />
-                            </Tooltip>
-                            {values.state}, {values.location}
-                          </h4>
-                          <h4>
-                            <Tooltip title='Date and Time'>
-                              <WatchIcon />
-                            </Tooltip>
-                            {moment(values.date).format('Do MMMM YYYY')},{' '}
-                            {values.time}
-                          </h4>
-                          <h4>
-                            <Tooltip title='Event type'>
-                              <PianoIcon />
-                            </Tooltip>
-                            {values.type}
-                          </h4>
-                          <h4>
-                            <Tooltip title='Host'>
-                              <PeopleOutlineIcon />
-                            </Tooltip>
-                            {values.host}
-                          </h4>
-                          <h4>
-                            <Tooltip title='Organization'>
-                              <StoreIcon />
-                            </Tooltip>
-                            {values.org}
-                          </h4>
-                        </div>
+                    <div className='card'>
+                      <div>
+                        <h1>{values.eventsHostedNum}</h1>
+                        <span>Event</span>
+                      </div>
+                      <div>
+                        <span></span>
+                      </div>
+                    </div>
 
-                        <div>
-                          <p>{values.hype}</p>
+                    <div className='card'>
+                      <div>
+                        <small>Guests</small>
+                        <span>Expected: {values.expectedGuests}</span>
+                        <h1>{roundUp(values.guestPercentage, 1)}%</h1>
+                        <span>Scanned: {values.guestScanned}</span>
+                      </div>
+                      <div>
+                        <span></span>
+                      </div>
+                    </div>
 
-                          <div>
-                            {values.tickets[0].map((ticket, i) => (
-                              <div key={i}>
-                                <h4>
-                                  <Tooltip title='Ticket type'>
-                                    <LocalBarIcon />
-                                  </Tooltip>
-                                  {ticket.name}
-                                </h4>
-                                <small>{ticket.description}</small>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                    <div className='card gradient shadow-box'>
+                      <div>
+                        <small>Income</small>
+                        <span>
+                          Projected:{' '}
+                          <CurrencyFormat
+                            value={values.projectedIncome}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            prefix={'₦'}
+                            renderText={(value) => <div>{value}</div>}
+                          />
+                        </span>
+                        <h1>{roundUp(values.incomePercentage, 1)}%</h1>
+                        <span>
+                          Realized:{' '}
+                          <CurrencyFormat
+                            value={values.realizedIncome}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            prefix={'₦'}
+                            renderText={(value) => <div>{value}</div>}
+                          />
+                        </span>
+                      </div>
+                      <div>
+                        <span></span>
                       </div>
                     </div>
                   </div>
+                  <div className='recent-grid'>
+                    <div className='projects'>
+                      <div className='tickets__main'>
+                        <div className='tickets__img'>
+                          <div
+                            style={{
+                              backgroundImage: `url('${values.img}')`,
+                            }}
+                          ></div>
+                          <img
+                            className='shadow-box'
+                            src={values.img}
+                            alt='ticket adnan img'
+                            loading='lazy'
+                          />
+                        </div>
 
-                  <div className='grid-card'>
-                    <div className='card-header'>
-                      <h3>Tickets information</h3>
-                    </div>
+                        <div className='tickets__body'>
+                          <div className='box'>
+                            <div>
+                              <h1>{values.name}</h1>
+                              <h4>
+                                <Tooltip title='Location'>
+                                  <PlaceIcon />
+                                </Tooltip>
+                                {values.state}, {values.location}
+                              </h4>
+                              <h4>
+                                <Tooltip title='Date and Time'>
+                                  <WatchIcon />
+                                </Tooltip>
+                                {moment(values.date).format('Do MMMM YYYY')},{' '}
+                                {values.time}
+                              </h4>
+                              <h4>
+                                <Tooltip title='Event type'>
+                                  <PianoIcon />
+                                </Tooltip>
+                                {values.type}
+                              </h4>
+                              <h4>
+                                <Tooltip title='Host'>
+                                  <PeopleOutlineIcon />
+                                </Tooltip>
+                                {values.host}
+                              </h4>
+                              <h4>
+                                <Tooltip title='Organization'>
+                                  <StoreIcon />
+                                </Tooltip>
+                                {values.org}
+                              </h4>
+                            </div>
 
-                    <div className='card-body'>
-                      <div className='table-responsive shadow-box'>
-                        <table width='100%'>
-                          <thead>
-                            <tr>
-                              <td>Ticket name</td>
-                              <td>Calculated price</td>
-                              <td>Quantity</td>
-                              <td>Sold</td>
-                            </tr>
-                          </thead>
-
-                          <tbody>
-                            {values.tickets[0].map((ticket, i) => (
-                              <tr key={i}>
-                                <td>{ticket.name}</td>
-                                <td>
-                                  <CurrencyFormat
-                                    value={ticket.calculatedPrice}
-                                    displayType={'text'}
-                                    thousandSeparator={true}
-                                    prefix={'₦'}
-                                    renderText={(value) => <div>{value}</div>}
-                                  />
-                                </td>
-                                <td>{ticket.quantity}</td>
-                                <td>{ticket.sold}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='costumers'>
-                  <div className='grid-card'>
-                    <div className='card-header'>
-                      <h3>Guest list</h3>
-                      <button className='gradient'>See all</button>
-                    </div>
-                    <div className='card-body'>
-                      {/* show only 5 guests  */}
-                      {values.guests
-                        .filter((guest, i) => i < 5)
-                        .map((guest) => (
-                          <div className='costumer' key={guest.id._id}>
-                            <div className='info'>
-                              <img
-                                src={
-                                  guest.id.profilePic
-                                    ? guest.id.profilePic
-                                    : profile
-                                }
-                                alt='ticket adnan'
-                                width='40px'
-                                height='40px'
-                                loading='lazy'
-                              />
+                            <div>
+                              <p>{values.hype}</p>
 
                               <div>
-                                <h4>{guest.id.name}</h4>
-                                <small>{guest.id.accountType}</small>
+                                {values.tickets[0].map((ticket, i) => (
+                                  <div key={i}>
+                                    <h4>
+                                      <Tooltip title='Ticket type'>
+                                        <LocalBarIcon />
+                                      </Tooltip>
+                                      {ticket.name}
+                                    </h4>
+                                    <small>{ticket.description}</small>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                            <div className='contact'></div>
                           </div>
-                        ))}
+                        </div>
+                      </div>
+
+                      <div className='grid-card'>
+                        <div className='card-header'>
+                          <h3>Tickets information</h3>
+                        </div>
+
+                        <div className='card-body'>
+                          <div className='table-responsive shadow-box'>
+                            <table width='100%'>
+                              <thead>
+                                <tr>
+                                  <td>Ticket name</td>
+                                  <td>Calculated price</td>
+                                  <td>Quantity</td>
+                                  <td>Sold</td>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+                                {values.tickets[0].map((ticket, i) => (
+                                  <tr key={i}>
+                                    <td>{ticket.name}</td>
+                                    <td>
+                                      <CurrencyFormat
+                                        value={ticket.calculatedPrice}
+                                        displayType={'text'}
+                                        thousandSeparator={true}
+                                        prefix={'₦'}
+                                        renderText={(value) => (
+                                          <div>{value}</div>
+                                        )}
+                                      />
+                                    </td>
+                                    <td>{ticket.quantity}</td>
+                                    <td>{ticket.sold}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='costumers'>
+                      <div className='grid-card'>
+                        <div className='card-header'>
+                          <h3>Guest list</h3>
+                          <button className='gradient'>See all</button>
+                        </div>
+                        <div className='card-body'>
+                          {/* show only 5 guests  */}
+                          {values.guests
+                            .filter((guest, i) => i < 5)
+                            .map((guest) => (
+                              <div className='costumer' key={guest.id._id}>
+                                <div className='info'>
+                                  <img
+                                    src={
+                                      guest.id.profilePic
+                                        ? guest.id.profilePic
+                                        : profile
+                                    }
+                                    alt='ticket adnan'
+                                    width='40px'
+                                    height='40px'
+                                    loading='lazy'
+                                  />
+
+                                  <div>
+                                    <h4>{guest.id.name}</h4>
+                                    <small>{guest.id.accountType}</small>
+                                  </div>
+                                </div>
+                                <div className='contact'></div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      {status(values.date) === false && (
+                        <span className='profile__scan-buttons'>
+                          <button className='error__button'>Pending</button>
+                          <p>
+                            You can only scan tickets of events on event day
+                          </p>
+                        </span>
+                      )}
+
+                      {status(values.date) === true && (
+                        <span className='profile__scan-buttons'>
+                          <button
+                            className='gradient'
+                            onClick={handleStartScan}
+                          >
+                            Scan QR
+                          </button>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
+              )}
 
-                <div>
-                  {status(values.date) === false && (
-                    <span className='profile__scan-buttons'>
-                      <button className='error__button'>Pending</button>
-                      <p>You can only scan tickets of events on event day</p>
-                    </span>
-                  )}
-
-                  {status(values.date) === true && (
-                    <span className='profile__scan-buttons'>
-                      <button className='gradient'>Scan QR</button>
-                    </span>
-                  )}
+              {values.startScan && (
+                <div className='profile__scan-qr'>
+                  <QrReader
+                    delay={300}
+                    onError={handleQrErr}
+                    onResult={handleQrResult}
+                    ViewFinder={() => {
+                      return (
+                        <div
+                          className='view_finder'
+                          style={{
+                            width: '50%',
+                            top: '25%',
+                            left: '25%',
+                            margin: 'auto',
+                            height: '50%',
+                            border: '3px double #007FFF',
+                            position: 'absolute',
+                            backgroundColor: 'rgba(10, 10, 10, 0.5)',
+                            zIndex: '999',
+                          }}
+                        ></div>
+                      );
+                    }}
+                    style={{
+                      height: '40vh',
+                      marginTop: '0',
+                    }}
+                    constraints={{ facingMode: { ideal: 'environment' } }}
+                    className='video'
+                  />
                 </div>
-              </div>
+              )}
             </main>
           </div>
         )}

@@ -856,7 +856,7 @@ const CreateEvent = () => {
           })
           .then((data) => {
             setPopup({ ...popup, pending2: false });
-            setUser({ data });
+            setUser({ data: data.data });
 
             controller.abort();
           })
@@ -866,7 +866,6 @@ const CreateEvent = () => {
       }
     }
   };
-
 
   const handlePersonalaccount = (e) => {
     setValues({ ...values, personalAccount: e.target.value });

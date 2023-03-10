@@ -22,7 +22,9 @@
     "buffer": "^6.0.3",
     "form-data": "^4.0.0",
     "moment": "^2.29.4",
+    "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.1",
+    "qrcode-reader": "^1.0.4",
     "react": "^18.2.0",
     "react-currency-format": "^1.1.0",
     "react-date-picker": "^9.1.0",
@@ -30,8 +32,10 @@
     "react-helmet": "^6.1.0",
     "react-icons": "^4.4.0",
     "react-loading-spin": "^2.1.9",
+    "react-qr-reader": "^3.0.0-beta-1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-webcam": "^7.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
